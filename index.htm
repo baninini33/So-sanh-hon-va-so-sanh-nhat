@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập So Sánh Hơn & So Sánh Nhất (Từng Câu One-by-One)</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --correct-color: #10b981;
+            --incorrect-color: #ef4444;
+            --accent-color: #8b5cf6;
+            --explain-bg: #f0fdf4;
+            --explain-border: #86efac;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .progress-bar-container {
+            background-color: #e2e8f0;
+            height: 10px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 0.3s ease;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .target-tag {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .target-comp {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .target-super {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .word-display {
+            text-align: center;
+            margin: 20px 0 25px 0;
+        }
+
+        .word-main {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .word-meaning {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        input[type="text"].correct {
+            border-color: var(--correct-color);
+            background-color: #f0fdf4;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        input[type="text"].incorrect {
+            border-color: var(--incorrect-color);
+            background-color: #fef2f2;
+            color: #991b1b;
+        }
+
+        .explanation-box {
+            display: none;
+            background-color: var(--explain-bg);
+            border: 1px solid var(--explain-border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .explanation-box.incorrect-bg {
+            background-color: #fff1f2;
+            border-color: #fca5a5;
+        }
+
+        .explain-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .explain-title.correct-title { color: #047857; }
+        .explain-title.incorrect-title { color: #b91c1c; }
+
+        .explain-text {
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-next {
+            background-color: var(--accent-color);
+            color: white;
+            display: none;
+        }
+
+        .btn-next:hover {
+            background-color: #7c3aed;
+        }
+
+        .end-screen {
+            display: none;
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .end-screen h2 {
+            font-size: 2rem;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .score-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .score-total {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Ôn Tập So Sánh Hơn & So Sánh Nhất</h1>
+        <p>So sánh hơn (Comparative) hoặc So sánh nhất (Superlative)</p>
+    </header>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="quiz-card" id="quiz-card">
+        <div class="card-header">
+            <span class="question-number" id="q-number">Câu 1 / 40</span>
+            <span class="target-tag" id="q-tag">So sánh hơn</span>
+        </div>
+
+        <div class="word-display">
+            <div class="word-main" id="q-word">big</div>
+            <div class="word-meaning" id="q-meaning">(to, lớn)</div>
+        </div>
+
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="Nhập dạng chia của từ..." autocomplete="off">
+        </div>
+
+        <div class="explanation-box" id="explanation-box">
+            <div class="explain-title" id="explain-title">✓ Chính xác!</div>
+            <div class="explain-text" id="explain-text">Giải thích chi tiết...</div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()">Kiểm Tra Đáp Án</button>
+        <button class="btn btn-next" id="btn-next" onclick="nextQuestion()">Câu Tiếp Theo &rarr;</button>
+    </div>
+
+    <div class="quiz-card end-screen" id="end-screen">
+        <h2>🎉 Hoàn Thành Bài Tập!</h2>
+        <p>Bạn đã hoàn thành tất cả 40 câu hỏi luyện tập.</p>
+        
+        <div class="score-circle">
+            <span class="score-num" id="final-score">0</span>
+            <span class="score-total">/ 40 CÂU ĐÚNG</span>
+        </div>
+
+        <p id="final-message" style="margin-bottom: 25px; font-weight: 600; color: #475569;"></p>
+
+        <button class="btn btn-primary" onclick="restartQuiz()">Làm Lại Từ Đầu</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { id: 1, word: "big", meaning: "to, lớn", type: "comparative", answer: ["bigger"], explanation: "'Big' là tính từ ngắn 1 âm tiết, có quy tắc Phụ âm - Nguyên âm - Phụ âm (b-i-g) nên ta gấp đôi phụ âm cuối 'g' + 'er' thành 'bigger'." },
+        { id: 2, word: "big", meaning: "to, lớn", type: "superlative", answer: ["the biggest", "biggest"], explanation: "'Big' là tính từ ngắn 1 âm tiết (C-V-C), so sánh nhất gấp đôi phụ âm cuối 'g' + 'est' thành 'the biggest'." },
+        { id: 3, word: "happy", meaning: "vui vẻ", type: "comparative", answer: ["happier"], explanation: "'Happy' có 2 âm tiết nhưng kết thúc bằng 'y', ta đổi 'y' thành 'i' rồi cộng 'er' thành 'happier'." },
+        { id: 4, word: "beautiful", meaning: "đẹp", type: "superlative", answer: ["the most beautiful", "most beautiful"], explanation: "'Beautiful' là tính từ dài (3 âm tiết), so sánh nhất dùng công thức 'the most + adj' thành 'the most beautiful'." },
+        { id: 5, word: "good", meaning: "tốt, giỏi", type: "comparative", answer: ["better"], explanation: "'Good' là tính từ bất quy tắc, dạng so sánh hơn đổi thành 'better'." },
+        { id: 6, word: "bad", meaning: "tệ, xấu", type: "superlative", answer: ["the worst", "worst"], explanation: "'Bad' là tính từ bất quy tắc, dạng so sánh nhất đổi thành 'the worst'." },
+        { id: 7, word: "fast", meaning: "nhanh", type: "comparative", answer: ["faster"], explanation: "'Fast' là tính từ ngắn 1 âm tiết, thêm 'er' vào sau thành 'faster'." },
+        { id: 8, word: "expensive", meaning: "đắt đỏ", type: "comparative", answer: ["more expensive"], explanation: "'Expensive' là tính từ dài (3 âm tiết), so sánh hơn dùng 'more + adj' thành 'more expensive'." },
+        { id: 9, word: "hot", meaning: "nóng", type: "superlative", answer: ["the hottest", "hottest"], explanation: "'Hot' là tính từ ngắn theo mẫu Phụ âm - Nguyên âm - Phụ âm (h-o-t), so sánh nhất gấp đôi 't' thành 'the hottest'." },
+        { id: 10, word: "small", meaning: "nhỏ", type: "superlative", answer: ["the smallest", "smallest"], explanation: "'Small' là tính từ ngắn 1 âm tiết, so sánh nhất thêm 'est' thành 'the smallest'." },
+        { id: 11, word: "dangerous", meaning: "nguy hiểm", type: "superlative", answer: ["the most dangerous", "most dangerous"], explanation: "'Dangerous' là tính từ dài (3 âm tiết), so sánh nhất dùng 'the most + adj' thành 'the most dangerous'." },
+        { id: 12, word: "good", meaning: "tốt, giỏi", type: "superlative", answer: ["the best", "best"], explanation: "'Good' là tính từ bất quy tắc, dạng so sánh nhất đổi hoàn toàn thành 'the best'." },
+        { id: 13, word: "easy", meaning: "dễ dàng", type: "comparative", answer: ["easier"], explanation: "'Easy' kết thúc bằng 'y', khi so sánh hơn đổi 'y' thành 'i' + 'er' thành 'easier'." },
+        { id: 14, word: "far", meaning: "xa", type: "comparative", answer: ["farther", "further"], explanation: "'Far' là tính từ bất quy tắc, so sánh hơn đổi thành 'farther' (khoảng cách địa lý) hoặc 'further' (mức độ/chi tiết)." },
+        { id: 15, word: "interesting", meaning: "thú vị", type: "comparative", answer: ["more interesting"], explanation: "'Interesting' là tính từ dài (4 âm tiết), so sánh hơn thêm 'more' phía trước thành 'more interesting'." },
+        { id: 16, word: "thin", meaning: "gầy, mỏng", type: "comparative", answer: ["thinner"], explanation: "'Thin' tuân theo quy tắc Phụ âm - Nguyên âm - Phụ âm (t-h-i-n tính từ cuối), gấp đôi phụ âm 'n' + 'er' thành 'thinner'." },
+        { id: 17, word: "difficult", meaning: "khó", type: "superlative", answer: ["the most difficult", "most difficult"], explanation: "'Difficult' là tính từ dài (3 âm tiết), so sánh nhất là 'the most difficult'." },
+        { id: 18, word: "little", meaning: "ít", type: "comparative", answer: ["less"], explanation: "'Little' là tính từ bất quy tắc (chỉ số lượng/mức độ), so sánh hơn đổi thành 'less'." },
+        { id: 19, word: "cheap", meaning: "rẻ", type: "comparative", answer: ["cheaper"], explanation: "'Cheap' có 2 nguyên âm 'ea' đứng cạnh nhau nên không gấp đôi phụ âm cuối, chỉ thêm 'er' thành 'cheaper'." },
+        { id: 20, word: "important", meaning: "quan trọng", type: "superlative", answer: ["the most important", "most important"], explanation: "'Important' là tính từ dài (3 âm tiết), so sánh nhất là 'the most important'." },
+        { id: 21, word: "cold", meaning: "lạnh", type: "comparative", answer: ["colder"], explanation: "'Cold' là tính từ ngắn kết thúc bằng 2 phụ âm 'ld', chỉ cần thêm 'er' thành 'colder'." },
+        { id: 22, word: "cold", meaning: "lạnh", type: "superlative", answer: ["the coldest", "coldest"], explanation: "'Cold' là tính từ ngắn, so sánh nhất thêm 'est' thành 'the coldest'." },
+        { id: 23, word: "heavy", meaning: "nặng", type: "comparative", answer: ["heavier"], explanation: "'Heavy' có đuôi 'y', đổi 'y' thành 'i' rồi cộng 'er' thành 'heavier'." },
+        { id: 24, word: "heavy", meaning: "nặng", type: "superlative", answer: ["the heaviest", "heaviest"], explanation: "'Heavy' có đuôi 'y', đổi 'y' thành 'i' rồi cộng 'est' thành 'the heaviest'." },
+        { id: 25, word: "popular", meaning: "phổ biến", type: "comparative", answer: ["more popular"], explanation: "'Popular' là tính từ dài (3 âm tiết), so sánh hơn dùng 'more popular'." },
+        { id: 26, word: "popular", meaning: "phổ biến", type: "superlative", answer: ["the most popular", "most popular"], explanation: "'Popular' là tính từ dài (3 âm tiết), so sánh nhất dùng 'the most popular'." },
+        { id: 27, word: "bad", meaning: "tệ, xấu", type: "comparative", answer: ["worse"], explanation: "'Bad' là tính từ bất quy tắc, dạng so sánh hơn đổi hoàn toàn thành 'worse'." },
+        { id: 28, word: "far", meaning: "xa", type: "superlative", answer: ["the farthest", "farthest", "the furthest", "furthest"], explanation: "'Far' dạng so sánh nhất bất quy tắc đổi thành 'the farthest' hoặc 'the furthest'." },
+        { id: 29, word: "tall", meaning: "cao", type: "comparative", answer: ["taller"], explanation: "'Tall' là tính từ ngắn, thêm 'er' thành 'taller'." },
+        { id: 30, word: "tall", meaning: "cao", type: "superlative", answer: ["the tallest", "tallest"], explanation: "'Tall' là tính từ ngắn, so sánh nhất thêm 'est' thành 'the tallest'." },
+        { id: 31, word: "comfortable", meaning: "thoải mái", type: "comparative", answer: ["more comfortable"], explanation: "'Comfortable' là tính từ dài (4 âm tiết), so sánh hơn dùng 'more comfortable'." },
+        { id: 32, word: "comfortable", meaning: "thoải mái", type: "superlative", answer: ["the most comfortable", "most comfortable"], explanation: "'Comfortable' là tính từ dài, so sánh nhất dùng 'the most comfortable'." },
+        { id: 33, word: "sunny", meaning: "nhiều nắng", type: "comparative", answer: ["sunnier"], explanation: "'Sunny' kết thúc bằng 'y', đổi 'y' thành 'i' + 'er' thành 'sunnier'." },
+        { id: 34, word: "clever", meaning: "thông minh", type: "superlative", answer: ["the cleverest", "cleverest", "the most clever", "most clever"], explanation: "'Clever' là trường hợp đặc biệt (2 âm tiết đuôi -er), có thể dùng cả 'the cleverest' hoặc 'the most clever'." },
+        { id: 35, word: "crowded", meaning: "đông đúc", type: "comparative", answer: ["more crowded"], explanation: "'Crowded' là tính từ 2 âm tiết có đuôi '-ed', áp dụng quy tắc tính từ dài: 'more crowded'." },
+        { id: 36, word: "exciting", meaning: "hào hứng, thú vị", type: "superlative", answer: ["the most exciting", "most exciting"], explanation: "'Exciting' là tính từ dài (3 âm tiết), so sánh nhất dùng 'the most exciting'." },
+        { id: 37, word: "fat", meaning: "béo, mập", type: "comparative", answer: ["fatter"], explanation: "'Fat' là tính từ ngắn (C-V-C), gấp đôi phụ âm 't' + 'er' thành 'fatter'." },
+        { id: 38, word: "lazy", meaning: "lười biếng", type: "superlative", answer: ["the laziest", "laziest"], explanation: "'Lazy' kết thúc bằng 'y', đổi 'y' thành 'i' + 'est' thành 'the laziest'." },
+        { id: 39, word: "much", meaning: "nhiều", type: "comparative", answer: ["more"], explanation: "'Much' (hoặc 'Many') là từ bất quy tắc, so sánh hơn đổi thành 'more'." },
+        { id: 40, word: "many", meaning: "nhiều", type: "superlative", answer: ["the most", "most"], explanation: "'Many' (hoặc 'Much') dạng so sánh nhất bất quy tắc đổi thành 'the most'." }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const qNumberEl = document.getElementById('q-number');
+    const qTagEl = document.getElementById('q-tag');
+    const qWordEl = document.getElementById('q-word');
+    const qMeaningEl = document.getElementById('q-meaning');
+    const inputEl = document.getElementById('user-input');
+    const explainBox = document.getElementById('explanation-box');
+    const explainTitle = document.getElementById('explain-title');
+    const explainText = document.getElementById('explain-text');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnNext = document.getElementById('btn-next');
+    const progressBar = document.getElementById('progress-bar');
+
+    function loadQuestion() {
+        const item = quizData[currentIndex];
+        
+        qNumberEl.innerText = `Câu ${currentIndex + 1} / ${quizData.length}`;
+        qWordEl.innerText = item.word;
+        qMeaningEl.innerText = `(${item.meaning})`;
+
+        if (item.type === 'comparative') {
+            qTagEl.innerText = 'So sánh hơn';
+            qTagEl.className = 'target-tag target-comp';
+        } else {
+            qTagEl.innerText = 'So sánh nhất';
+            qTagEl.className = 'target-tag target-super';
+        }
+
+        inputEl.value = '';
+        inputEl.className = '';
+        inputEl.disabled = false;
+        inputEl.focus();
+
+        explainBox.style.display = 'none';
+        btnSubmit.style.display = 'block';
+        btnNext.style.display = 'none';
+
+        const progressPercent = (currentIndex / quizData.length) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+    }
+
+    function submitAnswer() {
+        const item = quizData[currentIndex];
+        const userVal = inputEl.value.trim().toLowerCase();
+
+        if (userVal === '') return;
+
+        const isCorrect = item.answer.map(a => a.toLowerCase()).includes(userVal);
+
+        inputEl.disabled = true;
+
+        if (isCorrect) {
+            score++;
+            inputEl.className = 'correct';
+            explainTitle.innerText = '✓ Chính xác!';
+            explainTitle.className = 'explain-title correct-title';
+            explainBox.className = 'explanation-box';
+        } else {
+            inputEl.className = 'incorrect';
+            explainTitle.innerText = `✗ Chưa đúng! Đáp án: "${item.answer[0]}"`;
+            explainTitle.className = 'explain-title incorrect-title';
+            explainBox.className = 'explanation-box incorrect-bg';
+        }
+
+        explainText.innerText = item.explanation;
+        explainBox.style.display = 'block';
+
+        btnSubmit.style.display = 'none';
+        btnNext.style.display = 'block';
+        btnNext.focus();
+    }
+
+    function nextQuestion() {
+        currentIndex++;
+        if (currentIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showEndScreen();
+        }
+    }
+
+    function showEndScreen() {
+        progressBar.style.width = '100%';
+        document.getElementById('quiz-card').style.display = 'none';
+        
+        const endScreen = document.getElementById('end-screen');
+        endScreen.style.display = 'block';
+
+        document.getElementById('final-score').innerText = score;
+
+        const rate = Math.round((score / quizData.length) * 100);
+        let message = '';
+        if (rate >= 90) message = 'Xuất sắc! Bạn đã nắm rất vững ngữ pháp So Sánh!';
+        else if (rate >= 70) message = 'Kết quả rất tốt! Hãy ôn lại một chút ở các câu làm sai nhé.';
+        else message = 'Bạn cần xem kỹ lại các quy tắc chia tính từ để làm tốt hơn nhé!';
+
+        document.getElementById('final-message').innerText = message;
+    }
+
+    function restartQuiz() {
+        currentIndex = 0;
+        score = 0;
+        document.getElementById('end-screen').style.display = 'none';
+        document.getElementById('quiz-card').style.display = 'block';
+        loadQuestion();
+    }
+
+    // Enter key shortcuts
+    inputEl.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            if (btnSubmit.style.display !== 'none') {
+                submitAnswer();
+            }
+        }
+    });
+
+    window.onload = loadQuestion;
+</script>
+
+</body>
+</html>
